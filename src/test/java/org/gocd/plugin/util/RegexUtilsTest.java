@@ -1,4 +1,4 @@
-package com.tw.go.plugin.util;
+package org.gocd.plugin.util;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.tw.go.plugin;
+package org.gocd.plugin;
 
 public class User {
     private String username;

@@ -33,3 +33,8 @@
     <input type="text" ng-model="username_regex" ng-required="true"/>
     <span class="form_error" ng-show="GOINPUTNAME[username_regex].$error.server">{{ GOINPUTNAME[username_regex].$error.server }}</span>
 </div>
+<div class="form_item_block">
+    <label>OAuth 2 Server (if applicable):</label>
+    <input type="text" ng-model="oauth_server_base_url"/>
+    <span class="form_error" ng-show="GOINPUTNAME[oauth_server_base_url].$error.server">{{ GOINPUTNAME[oauth_server_base_url].$error.server }}</span>
+</div>

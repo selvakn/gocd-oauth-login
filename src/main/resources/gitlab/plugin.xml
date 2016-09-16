@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<go-plugin id="gitlab.oauth.login" version="1">
+    <about>
+        <name>GitLab OAuth Login</name>
+        <version>0.1</version>
+        <target-go-version>16.8.0</target-go-version>
+        <description>Allows users to login with GitLab (CE)</description>
+        <vendor>
+            <name>Selvakumar Natesan</name>
+            <url>https://github.com/selvakn/gocd-oauth-login</url>
+        </vendor>
+    </about>
+</go-plugin>

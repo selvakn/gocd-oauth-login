@@ -1,6 +1,7 @@
-package com.tw.go.plugin.util;
+package org.gocd.plugin.util;
 
-import static org.apache.commons.lang.StringUtils.isBlank;
+
+import static org.apache.commons.lang3.StringUtils.isBlank;
 
 public class RegexUtils {
     public static boolean matchesRegex(String str, String pattern) {
