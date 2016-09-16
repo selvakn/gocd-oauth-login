@@ -32,9 +32,6 @@ public class OAuthLoginPlugin implements GoPlugin {
     private static final String PLUGIN_SETTINGS_SERVER_BASE_URL = "server_base_url";
     private static final String PLUGIN_SETTINGS_CONSUMER_KEY = "consumer_key";
     private static final String PLUGIN_SETTINGS_CONSUMER_SECRET = "consumer_secret";
-    private static final String PLUGIN_SETTINGS_USERNAME = "username";
-    private static final String PLUGIN_SETTINGS_PASSWORD = "password";
-    private static final String PLUGIN_SETTINGS_OAUTH_TOKEN = "oauth_token";
     private static final String PLUGIN_SETTINGS_OAUTH_SERVER = "oauth_server_base_url";
 
     private static final String PLUGIN_SETTINGS_GET_CONFIGURATION = "go.plugin-settings.get-configuration";
@@ -194,8 +191,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         }
         Map<String, String> responseBodyMap = asMapOfStrings(response.responseBody());
         return new PluginSettings(responseBodyMap.get(PLUGIN_SETTINGS_SERVER_BASE_URL), responseBodyMap.get(PLUGIN_SETTINGS_CONSUMER_KEY),
-                responseBodyMap.get(PLUGIN_SETTINGS_CONSUMER_SECRET), responseBodyMap.get(PLUGIN_SETTINGS_USERNAME),
-                responseBodyMap.get(PLUGIN_SETTINGS_PASSWORD), responseBodyMap.get(PLUGIN_SETTINGS_OAUTH_TOKEN),
+                responseBodyMap.get(PLUGIN_SETTINGS_CONSUMER_SECRET),
                 responseBodyMap.get(PLUGIN_SETTINGS_OAUTH_SERVER)
         );
     }
