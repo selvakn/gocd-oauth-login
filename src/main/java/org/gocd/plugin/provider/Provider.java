@@ -7,7 +7,6 @@ import org.gocd.plugin.Profile;
 import org.gocd.plugin.User;
 
 import java.io.IOException;
-import java.util.List;
 
 public interface Provider {
     public String getPluginId();
@@ -21,8 +20,6 @@ public interface Provider {
         String fullName = profile.getFullName();
         return new User(emailId, fullName, emailId);
     }
-
-    public List<User> searchUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException;
 
     public DefaultApi20 oauthService(PluginSettings pluginSettings);
 
