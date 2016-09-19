@@ -23,6 +23,7 @@ public class GitLabProvider implements Provider {
 
     private static final String IMAGE = ImageReader.readImage("logo_gitlab_64px.png");
     public static final String CURRENT_USER = "%s/api/v3/user";
+    public static final String SEARCH_USERS = "%s/api/v3/users?search=%s";
 
     @Override
     public String getPluginId() {
@@ -37,6 +38,20 @@ public class GitLabProvider implements Provider {
     @Override
     public String getImageURL() {
         return IMAGE;
+    }
+
+    @Override
+    public List<User> searchUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
+        OAuthRequest request = new OAuthRequest(Verb.GET, String.format(SEARCH_USERS, pluginSettings.getOauthServerBaseURL(), searchTerm), service);
+        request.addQuerystringParameter("access_token", accessToken);
+        Response response = request.send();
+
+        List<Map<String, String>> usersResponse = fromJSON(response.getBody(), new TypeToken<List<Map<String, String>>>() {
+        }.getType());
+        return usersResponse
+                .stream()
+                .map(userMap -> getUser(new Profile(userMap.get("email"), userMap.get("name"))))
+                .collect(Collectors.toList());
     }
 
     @Override

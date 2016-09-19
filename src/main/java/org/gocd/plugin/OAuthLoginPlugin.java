@@ -19,6 +19,7 @@ import org.gocd.plugin.util.FieldValidator;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static org.gocd.plugin.util.JSONUtils.*;
 
@@ -44,6 +45,9 @@ public class OAuthLoginPlugin implements GoPlugin {
 
     private static final String GET_PLUGIN_SETTINGS = "go.processor.plugin-settings.get";
 
+    private static final String GO_REQUEST_SESSION_PUT = "go.processor.session.put";
+    private static final String GO_REQUEST_SESSION_GET = "go.processor.session.get";
+    private static final String GO_REQUEST_SESSION_REMOVE = "go.processor.session.remove";
     private static final String GO_REQUEST_AUTHENTICATE_USER = "go.processor.authentication.authenticate-user";
 
     private static final int SUCCESS_RESPONSE_CODE = 200;
@@ -84,7 +88,7 @@ public class OAuthLoginPlugin implements GoPlugin {
             case PLUGIN_CONFIGURATION:
                 return renderJSON(SUCCESS_RESPONSE_CODE, getPluginConfiguration());
             case SEARCH_USER:
-                return handleSearchUserRequest();
+                return handleSearchUserRequest(goPluginApiRequest);
             case WEB_REQUEST_INDEX:
                 return handleSetupLoginWebRequest();
             case WEB_REQUEST_AUTHENTICATE:
@@ -99,7 +103,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private GoPluginApiResponse handleGetPluginSettingsConfiguration() {
-        Map<String, Object> response = new HashMap<>();
+        Map<String, Object> response = new HashMap<String, Object>();
         response.put(PLUGIN_SETTINGS_SERVER_BASE_URL, createField("Server Base URL", null, true, false, "0"));
         response.put(PLUGIN_SETTINGS_CONSUMER_KEY, createField("OAuth Client ID", null, true, false, "1"));
         response.put(PLUGIN_SETTINGS_CONSUMER_SECRET, createField("OAuth Client Secret", null, true, false, "2"));
@@ -107,7 +111,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private Map<String, Object> createField(String displayName, String defaultValue, boolean isRequired, boolean isSecure, String displayOrder) {
-        Map<String, Object> fieldProperties = new HashMap<>();
+        Map<String, Object> fieldProperties = new HashMap<String, Object>();
         fieldProperties.put("display-name", displayName);
         fieldProperties.put("default-value", defaultValue);
         fieldProperties.put("required", isRequired);
@@ -129,7 +133,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         Map<String, Object> responseMap = fromJSON(goPluginApiRequest.requestBody(), new TypeToken<Map<String, Object>>() {
         }.getType());
         Map<String, String> configuration = keyValuePairs(responseMap, "plugin-settings");
-        List<Map<String, Object>> response = new ArrayList<>();
+        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
 
         validate(response, fieldValidation ->
                 validateRequiredField(configuration, fieldValidation, "server_base_url", "Server Base URL"));
@@ -167,8 +171,19 @@ public class OAuthLoginPlugin implements GoPlugin {
         return configuration;
     }
 
-    private GoPluginApiResponse handleSearchUserRequest() {
-        return renderJSON(SUCCESS_RESPONSE_CODE, null);
+    private GoPluginApiResponse handleSearchUserRequest(GoPluginApiRequest goPluginApiRequest) {
+        Map<String, String> requestBodyMap = asMapOfStrings(goPluginApiRequest.requestBody());
+        String searchTerm = requestBodyMap.get("search-term");
+        PluginSettings pluginSettings = getPluginSettings();
+        try {
+            List<Map> searchResults = provider
+                    .searchUser(getFromSession("oauthAccessToken"), getOauth20Service(), pluginSettings, searchTerm)
+                    .stream()
+                    .map(this::getUserMap).collect(Collectors.toList());
+            return renderJSON(SUCCESS_RESPONSE_CODE, searchResults);
+        } catch (IOException e) {
+            return renderJSON(SUCCESS_RESPONSE_CODE, null);
+        }
     }
 
     private GoPluginApiResponse handleSetupLoginWebRequest() {
@@ -216,6 +231,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         String secretState = goPluginApiRequest.requestParameters().get("state");
         OAuth20Service service = getOauth20Service(secretState);
         String accessToken = service.getAccessToken(code).getAccessToken();
+        saveInSession("oauthAccessToken", accessToken);
         return provider.getUser(accessToken, service, getPluginSettings());
     }
 
@@ -237,6 +253,24 @@ public class OAuthLoginPlugin implements GoPlugin {
                 .state(secretState)
                 .callback(getURL(getPluginSettings().getServerBaseURL()))
                 .build(provider.oauthService(getPluginSettings()));
+    }
+
+    private void saveInSession(String key, String value) {
+        GoApiRequest goApiRequest = createGoApiRequest(
+                GO_REQUEST_SESSION_PUT, toJSON(map(
+                        "plugin-id", provider.getPluginId(), "session-data", map(key, value))
+                ));
+        goApplicationAccessor.submit(goApiRequest);
+    }
+
+    private String getFromSession(String key) {
+        GoApiRequest goApiRequest = createGoApiRequest(
+                GO_REQUEST_SESSION_GET, toJSON(map("plugin-id", provider.getPluginId()))
+        );
+        LOGGER.error("Code" + goApplicationAccessor.submit(goApiRequest).responseCode());
+        Map<String, String> data = asMapOfStrings(goApplicationAccessor.submit(goApiRequest).responseBody());
+        LOGGER.error(data.toString());
+        return data.get(key);
     }
 
     private void setUserSessionAs(User user) {
@@ -335,6 +369,13 @@ public class OAuthLoginPlugin implements GoPlugin {
     private <T, U> Map<T, U> map(final T key, final U value) {
         Map<T, U> retVal = new HashMap<>();
         retVal.put(key, value);
+        return retVal;
+    }
+
+    private <T, U> Map<T, U> map(T key1, U value1, T key2, U value2) {
+        Map<T, U> retVal = new HashMap<>();
+        retVal.put(key1, value1);
+        retVal.put(key2, value2);
         return retVal;
     }
 }
