@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.gocd.plugin</groupId>
     <artifactId>oauth-login</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -67,6 +67,16 @@
             <properties>
                 <plugin.name>gitlab-oauth-login</plugin.name>
                 <resource.directory>src/main/resources/gitlab</resource.directory>
+            </properties>
+        </profile>
+        <profile>
+            <id>github.oauth.login</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <plugin.name>github-oauth-login</plugin.name>
+                <resource.directory>src/main/resources/github</resource.directory>
             </properties>
         </profile>
     </profiles>

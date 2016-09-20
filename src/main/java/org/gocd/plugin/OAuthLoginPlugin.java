@@ -21,7 +21,6 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.gocd.plugin.util.JSONUtils.*;
 
 @Extension
@@ -174,7 +173,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private GoPluginApiResponse handleSearchUserRequest(GoPluginApiRequest goPluginApiRequest) {
-        if (!provider.isSearchUserEnabled() || isEmpty(getPluginSettings().getPrivateToken())) {
+        if (!provider.isSearchUserEnabled()) {
             return renderJSON(SUCCESS_RESPONSE_CODE, null);
         }
 
