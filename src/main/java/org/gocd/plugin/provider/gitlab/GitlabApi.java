@@ -6,11 +6,11 @@ import com.github.scribejava.core.extractors.TokenExtractor;
 import com.github.scribejava.core.model.OAuth2AccessToken;
 import com.github.scribejava.core.model.Verb;
 
-public class GitlabApi extends DefaultApi20 {
+public class GitLabApi extends DefaultApi20 {
 
     private String oauthServerBaseURL;
 
-    public GitlabApi(String oauthServerBaseURL) {
+    public GitLabApi(String oauthServerBaseURL) {
         this.oauthServerBaseURL = oauthServerBaseURL;
     }
 

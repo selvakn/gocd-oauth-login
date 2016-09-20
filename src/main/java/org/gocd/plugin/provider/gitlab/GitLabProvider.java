@@ -22,8 +22,8 @@ import static org.gocd.plugin.util.JSONUtils.fromJSON;
 public class GitLabProvider implements Provider {
 
     private static final String IMAGE = ImageReader.readImage("logo_gitlab_64px.png");
-    public static final String CURRENT_USER = "%s/api/v3/user";
-    public static final String SEARCH_USERS = "%s/api/v3/users?search=%s";
+    private static final String CURRENT_USER = "%s/api/v3/user";
+    private static final String SEARCH_USERS = "%s/api/v3/users?search=%s";
 
     @Override
     public String getPluginId() {
@@ -61,7 +61,7 @@ public class GitLabProvider implements Provider {
 
     @Override
     public DefaultApi20 oauthService(PluginSettings pluginSettings) {
-        return new GitlabApi(pluginSettings.getOauthServerBaseURL());
+        return new GitLabApi(pluginSettings.getOauthServerBaseURL());
     }
 
     @Override
