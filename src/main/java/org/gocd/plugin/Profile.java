@@ -1,19 +1,11 @@
 package org.gocd.plugin;
 
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+
+@AllArgsConstructor
+@Getter
 public class Profile {
     private String fullName;
     private String email;
-
-    public Profile(String fullName, String email) {
-        this.fullName = fullName;
-        this.email = email;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getFullName() {
-        return fullName;
-    }
 }

@@ -41,6 +41,11 @@ public class GitLabProvider implements Provider {
     }
 
     @Override
+    public boolean isSearchUserEnabled() {
+        return false;
+    }
+
+    @Override
     public List<User> searchUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
         OAuthRequest request = new OAuthRequest(Verb.GET, String.format(SEARCH_USERS, pluginSettings.getOauthServerBaseURL(), searchTerm), service);
         request.addQuerystringParameter("access_token", accessToken);

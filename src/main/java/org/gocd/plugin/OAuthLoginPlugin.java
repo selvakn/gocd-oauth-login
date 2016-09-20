@@ -103,7 +103,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private GoPluginApiResponse handleGetPluginSettingsConfiguration() {
-        Map<String, Object> response = new HashMap<String, Object>();
+        Map<String, Object> response = new HashMap<>();
         response.put(PLUGIN_SETTINGS_SERVER_BASE_URL, createField("Server Base URL", null, true, false, "0"));
         response.put(PLUGIN_SETTINGS_CONSUMER_KEY, createField("OAuth Client ID", null, true, false, "1"));
         response.put(PLUGIN_SETTINGS_CONSUMER_SECRET, createField("OAuth Client Secret", null, true, false, "2"));
@@ -111,7 +111,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private Map<String, Object> createField(String displayName, String defaultValue, boolean isRequired, boolean isSecure, String displayOrder) {
-        Map<String, Object> fieldProperties = new HashMap<String, Object>();
+        Map<String, Object> fieldProperties = new HashMap<>();
         fieldProperties.put("display-name", displayName);
         fieldProperties.put("default-value", defaultValue);
         fieldProperties.put("required", isRequired);
@@ -133,7 +133,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         Map<String, Object> responseMap = fromJSON(goPluginApiRequest.requestBody(), new TypeToken<Map<String, Object>>() {
         }.getType());
         Map<String, String> configuration = keyValuePairs(responseMap, "plugin-settings");
-        List<Map<String, Object>> response = new ArrayList<Map<String, Object>>();
+        List<Map<String, Object>> response = new ArrayList<>();
 
         validate(response, fieldValidation ->
                 validateRequiredField(configuration, fieldValidation, "server_base_url", "Server Base URL"));
@@ -172,6 +172,10 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private GoPluginApiResponse handleSearchUserRequest(GoPluginApiRequest goPluginApiRequest) {
+        if (!provider.isSearchUserEnabled()) {
+            return renderJSON(SUCCESS_RESPONSE_CODE, null);
+        }
+
         Map<String, String> requestBodyMap = asMapOfStrings(goPluginApiRequest.requestBody());
         String searchTerm = requestBodyMap.get("search-term");
         PluginSettings pluginSettings = getPluginSettings();
@@ -267,10 +271,9 @@ public class OAuthLoginPlugin implements GoPlugin {
         GoApiRequest goApiRequest = createGoApiRequest(
                 GO_REQUEST_SESSION_GET, toJSON(map("plugin-id", provider.getPluginId()))
         );
-        LOGGER.error("Code" + goApplicationAccessor.submit(goApiRequest).responseCode());
-        Map<String, String> data = asMapOfStrings(goApplicationAccessor.submit(goApiRequest).responseBody());
-        LOGGER.error(data.toString());
-        return data.get(key);
+        return asMapOfStrings(
+                goApplicationAccessor.submit(goApiRequest).responseBody()
+        ).get(key);
     }
 
     private void setUserSessionAs(User user) {

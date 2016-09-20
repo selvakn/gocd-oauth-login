@@ -22,6 +22,8 @@ public interface Provider {
         return new User(emailId, fullName, emailId);
     }
 
+    public boolean isSearchUserEnabled();
+
     public List<User> searchUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException;
 
     public DefaultApi20 oauthService(PluginSettings pluginSettings);
