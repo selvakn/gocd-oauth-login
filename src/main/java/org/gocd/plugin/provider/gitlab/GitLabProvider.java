@@ -6,15 +6,13 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.reflect.TypeToken;
+import org.gocd.plugin.GoCDUser;
 import org.gocd.plugin.PluginSettings;
-import org.gocd.plugin.Profile;
-import org.gocd.plugin.User;
 import org.gocd.plugin.provider.Provider;
 import org.gocd.plugin.util.ImageReader;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 import static org.gocd.plugin.util.JSONUtils.fromJSON;
@@ -32,7 +30,7 @@ public class GitLabProvider implements Provider {
 
     @Override
     public String getName() {
-        return "Gitlab";
+        return "GitLab";
     }
 
     @Override
@@ -41,21 +39,16 @@ public class GitLabProvider implements Provider {
     }
 
     @Override
-    public boolean isSearchUserEnabled() {
-        return false;
-    }
-
-    @Override
-    public List<User> searchUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
+    public List<GoCDUser> searchUser(OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
         OAuthRequest request = new OAuthRequest(Verb.GET, String.format(SEARCH_USERS, pluginSettings.getOauthServerBaseURL(), searchTerm), service);
-        request.addQuerystringParameter("access_token", accessToken);
+        request.addQuerystringParameter("private_token", pluginSettings.getPrivateToken());
         Response response = request.send();
 
-        List<Map<String, String>> usersResponse = fromJSON(response.getBody(), new TypeToken<List<Map<String, String>>>() {
+        List<GitLabUser> usersResponse = fromJSON(response.getBody(), new TypeToken<List<GitLabUser>>() {
         }.getType());
         return usersResponse
                 .stream()
-                .map(userMap -> getUser(new Profile(userMap.get("email"), userMap.get("name"))))
+                .map(GitLabUser::toUser)
                 .collect(Collectors.toList());
     }
 
@@ -65,14 +58,14 @@ public class GitLabProvider implements Provider {
     }
 
     @Override
-    public User getUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings) throws IOException {
+    public GoCDUser getUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings) throws IOException {
         OAuthRequest request = new OAuthRequest(Verb.GET, String.format(CURRENT_USER, pluginSettings.getOauthServerBaseURL()), service);
         request.addQuerystringParameter("access_token", accessToken);
         Response response = request.send();
 
-        Map<String, Object> responseBody = fromJSON(response.getBody(), new TypeToken<Map<String, Object>>() {
+        GitLabUser gitLabUser = fromJSON(response.getBody(), new TypeToken<GitLabUser>() {
         }.getType());
 
-        return getUser(new Profile((String) responseBody.get("email"), (String) responseBody.get("name")));
+        return gitLabUser.toUser();
     }
 }

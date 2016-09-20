@@ -12,5 +12,6 @@ public class PluginSettings {
     private String serverBaseURL;
     private String consumerKey;
     private String consumerSecret;
+    private String privateToken;
     private String oauthServerBaseURL;
 }

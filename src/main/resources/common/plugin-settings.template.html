@@ -14,6 +14,11 @@
     <span class="form_error" ng-show="GOINPUTNAME[consumer_secret].$error.server">{{ GOINPUTNAME[consumer_secret].$error.server }}</span>
 </div>
 <div class="form_item_block">
+    <label>Private token (for user search):</label>
+    <input type="text" ng-model="private_token"/>
+    <span class="form_error" ng-show="GOINPUTNAME[private_token].$error.server">{{ GOINPUTNAME[private_token].$error.server }}</span>
+</div>
+<div class="form_item_block">
     <label>OAuth 2 Server (if applicable):</label>
     <input type="text" ng-model="oauth_server_base_url"/>
     <span class="form_error" ng-show="GOINPUTNAME[oauth_server_base_url].$error.server">{{ GOINPUTNAME[oauth_server_base_url].$error.server }}</span>

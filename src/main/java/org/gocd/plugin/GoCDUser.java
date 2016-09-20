@@ -7,7 +7,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 @EqualsAndHashCode
-public class User {
+public class GoCDUser {
     private String username;
     private String displayName;
     private String emailId;

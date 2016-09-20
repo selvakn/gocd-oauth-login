@@ -21,6 +21,7 @@ import java.lang.reflect.Constructor;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import static org.apache.commons.lang3.StringUtils.isEmpty;
 import static org.gocd.plugin.util.JSONUtils.*;
 
 @Extension
@@ -33,6 +34,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     private static final String PLUGIN_SETTINGS_SERVER_BASE_URL = "server_base_url";
     private static final String PLUGIN_SETTINGS_CONSUMER_KEY = "consumer_key";
     private static final String PLUGIN_SETTINGS_CONSUMER_SECRET = "consumer_secret";
+    private static final String PLUGIN_SETTINGS_PRIVATE_TOKEN = "private_token";
     private static final String PLUGIN_SETTINGS_OAUTH_SERVER = "oauth_server_base_url";
 
     private static final String PLUGIN_SETTINGS_GET_CONFIGURATION = "go.plugin-settings.get-configuration";
@@ -172,7 +174,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private GoPluginApiResponse handleSearchUserRequest(GoPluginApiRequest goPluginApiRequest) {
-        if (!provider.isSearchUserEnabled()) {
+        if (!provider.isSearchUserEnabled() || isEmpty(getPluginSettings().getPrivateToken())) {
             return renderJSON(SUCCESS_RESPONSE_CODE, null);
         }
 
@@ -181,7 +183,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         PluginSettings pluginSettings = getPluginSettings();
         try {
             List<Map> searchResults = provider
-                    .searchUser(getFromSession("oauthAccessToken"), getOauth20Service(), pluginSettings, searchTerm)
+                    .searchUser(getOauth20Service(), pluginSettings, searchTerm)
                     .stream()
                     .map(this::getUserMap).collect(Collectors.toList());
             return renderJSON(SUCCESS_RESPONSE_CODE, searchResults);
@@ -211,6 +213,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         Map<String, String> responseBodyMap = asMapOfStrings(response.responseBody());
         return new PluginSettings(responseBodyMap.get(PLUGIN_SETTINGS_SERVER_BASE_URL), responseBodyMap.get(PLUGIN_SETTINGS_CONSUMER_KEY),
                 responseBodyMap.get(PLUGIN_SETTINGS_CONSUMER_SECRET),
+                responseBodyMap.get(PLUGIN_SETTINGS_PRIVATE_TOKEN),
                 responseBodyMap.get(PLUGIN_SETTINGS_OAUTH_SERVER)
         );
     }
@@ -219,7 +222,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         try {
             PluginSettings pluginSettings = getPluginSettings();
 
-            User user = authenticate(goPluginApiRequest);
+            GoCDUser user = authenticate(goPluginApiRequest);
 
             setUserSessionAs(user);
 
@@ -230,7 +233,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         }
     }
 
-    private User authenticate(GoPluginApiRequest goPluginApiRequest) throws IOException {
+    private GoCDUser authenticate(GoPluginApiRequest goPluginApiRequest) throws IOException {
         String code = goPluginApiRequest.requestParameters().get("code");
         String secretState = goPluginApiRequest.requestParameters().get("state");
         OAuth20Service service = getOauth20Service(secretState);
@@ -276,7 +279,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         ).get(key);
     }
 
-    private void setUserSessionAs(User user) {
+    private void setUserSessionAs(GoCDUser user) {
         GoApiRequest authenticateUserRequest = createGoApiRequest(
                 GO_REQUEST_AUTHENTICATE_USER,
                 toJSON(map("user", getUserMap(user)))
@@ -288,7 +291,7 @@ public class OAuthLoginPlugin implements GoPlugin {
         return String.format("%s/go/plugin/interact/%s/authenticate", serverBaseURL, provider.getPluginId());
     }
 
-    private Map<String, String> getUserMap(User user) {
+    private Map<String, String> getUserMap(GoCDUser user) {
         Map<String, String> userMap = new HashMap<>();
         userMap.put("username", user.getUsername());
         userMap.put("display-name", user.getDisplayName());
