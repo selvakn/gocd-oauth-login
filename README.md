@@ -5,6 +5,7 @@ This is GoCD's Authentication plugin that allows users to login using OAuth.
 
 ## Currently supported
 * GitLab CE
+* GitHub
 
 ## Requirements
 * GoCD >= v16.8
@@ -17,7 +18,7 @@ Download the latest plugin jar from [Releases](https://github.com/selvakn/gocd-o
 
 ## Configuration
 
-### Create an OAuth Application with an OAuth provider of your choice (GitHub, Google, etc.)
+### Create an OAuth Application with an OAuth provider of your choice (GitHub, GitLab, etc.)
 
 The oauth provider will normally ask you for an "OAuth Redirect URL". The redirect URL for the two plugins will be —
 * GitLab OAuth Plugin -- `https://your-go-server/go/plugin/interact/gitlab.oauth.login/authenticate`
