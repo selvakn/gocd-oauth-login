@@ -5,11 +5,11 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.gocd.plugin</groupId>
     <artifactId>oauth-login</artifactId>
-    <version>0.0.3</version>
+    <version>1.3</version>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <go.version>16.9.0</go.version>
+        <go.version>14.4.0</go.version>
         <main.dir>${project.basedir}</main.dir>
     </properties>
 
@@ -60,16 +60,6 @@
 
     <profiles>
         <profile>
-            <id>gitlab.oauth.login</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-            <properties>
-                <plugin.name>gitlab-oauth-login</plugin.name>
-                <resource.directory>src/main/resources/gitlab</resource.directory>
-            </properties>
-        </profile>
-        <profile>
             <id>github.oauth.login</id>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -81,12 +71,16 @@
         </profile>
         <profile>
             <id>google.oauth.login</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
             <properties>
                 <plugin.name>google-oauth-login</plugin.name>
                 <resource.directory>src/main/resources/google</resource.directory>
+            </properties>
+        </profile>
+        <profile>
+            <id>gitlab.oauth.login</id>
+            <properties>
+                <plugin.name>gitlab-oauth-login</plugin.name>
+                <resource.directory>src/main/resources/gitlab</resource.directory>
             </properties>
         </profile>
     </profiles>
