@@ -253,12 +253,14 @@ public class OAuthLoginPlugin implements GoPlugin {
     private OAuth20Service getOauth20Service(String secretState) {
         String clientId = getPluginSettings().getConsumerKey();
         String clientSecret = getPluginSettings().getConsumerSecret();
-        return new ServiceBuilder()
+        ServiceBuilder serviceBuilder = new ServiceBuilder()
                 .apiKey(clientId)
                 .apiSecret(clientSecret)
                 .state(secretState)
-                .callback(getURL(getPluginSettings().getServerBaseURL()))
-                .build(provider.oauthService(getPluginSettings()));
+                .callback(getURL(getPluginSettings().getServerBaseURL()));
+        if (provider.getScope() != null)
+            serviceBuilder.scope(provider.getScope());
+        return serviceBuilder.build(provider.oauthService(getPluginSettings()));
     }
 
     private void saveInSession(String key, String value) {

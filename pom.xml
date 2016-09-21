@@ -79,6 +79,16 @@
                 <resource.directory>src/main/resources/github</resource.directory>
             </properties>
         </profile>
+        <profile>
+            <id>google.oauth.login</id>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <plugin.name>google-oauth-login</plugin.name>
+                <resource.directory>src/main/resources/google</resource.directory>
+            </properties>
+        </profile>
     </profiles>
 
     <build>

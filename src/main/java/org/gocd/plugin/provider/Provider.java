@@ -6,22 +6,27 @@ import org.gocd.plugin.GoCDUser;
 import org.gocd.plugin.PluginSettings;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 
 public interface Provider {
-    public String getPluginId();
+    String getPluginId();
 
-    public String getName();
+    String getName();
 
-    public String getImageURL();
+    String getImageURL();
+
+    String getScope();
 
     default boolean isSearchUserEnabled() {
         return true;
     }
 
-    public List<GoCDUser> searchUser(OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException;
+    default List<GoCDUser> searchUser(OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
+        return new ArrayList<>();
+    }
 
-    public DefaultApi20 oauthService(PluginSettings pluginSettings);
+    DefaultApi20 oauthService(PluginSettings pluginSettings);
 
-    public GoCDUser getUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings) throws IOException;
+    GoCDUser getUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings) throws IOException;
 }

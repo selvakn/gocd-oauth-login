@@ -11,8 +11,9 @@ import org.gocd.plugin.GoCDUser;
 public class GitHubUser {
     private String login;
     private String name;
+    private String email;
 
     public GoCDUser toUser() {
-        return new GoCDUser(login, name, name);
+        return new GoCDUser(login, name, email);
     }
 }

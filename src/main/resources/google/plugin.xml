@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<go-plugin id="github.oauth.login" version="1">
+<go-plugin id="google.oauth.login" version="1">
     <about>
-        <name>GitHub OAuth Login</name>
+        <name>Google OAuth Login</name>
         <version>1.3</version>
         <target-go-version>15.2.0</target-go-version>
-        <description>Allows users to login with GitHub</description>
+        <description>Allows users to login with Google</description>
         <vendor>
             <name>Srinivas Upadhya</name>
             <url>https://github.com/gocd-contrib/gocd-oauth-login</url>

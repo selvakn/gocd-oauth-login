@@ -44,6 +44,11 @@ public class GitHubProvider implements Provider {
     }
 
     @Override
+    public String getScope() {
+        return "user:email";
+    }
+
+    @Override
     public List<GoCDUser> searchUser(OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
         OAuthRequest request = new OAuthRequest(Verb.GET, String.format(SEARCH_USERS, searchTerm), service);
         request.addQuerystringParameter("client_id", pluginSettings.getConsumerKey());

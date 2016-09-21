@@ -39,6 +39,11 @@ public class GitLabProvider implements Provider {
     }
 
     @Override
+    public String getScope() {
+        return null;
+    }
+
+    @Override
     public List<GoCDUser> searchUser(OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
         OAuthRequest request = new OAuthRequest(Verb.GET, String.format(SEARCH_USERS, pluginSettings.getOauthServerBaseURL(), searchTerm), service);
         request.addQuerystringParameter("private_token", pluginSettings.getPrivateToken());
