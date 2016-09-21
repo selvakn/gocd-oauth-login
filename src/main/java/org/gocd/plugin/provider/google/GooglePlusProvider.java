@@ -17,7 +17,7 @@ import java.io.IOException;
 
 import static org.gocd.plugin.util.JSONUtils.fromJSON;
 
-public class GooglePlusProvider implements Provider {
+public class GooglePlusProvider extends Provider {
 
     private static final String IMAGE = ImageReader.readImage("logo_google_plus_64px.png");
     private static final String CURRENT_USER = "https://www.googleapis.com/plus/v1/people/me";
@@ -54,14 +54,13 @@ public class GooglePlusProvider implements Provider {
 
     @Override
     public GoCDUser getUser(String accessToken, OAuth20Service service, PluginSettings pluginSettings) throws IOException {
-        OAuthRequest request = new OAuthRequest(Verb.GET, String.format(CURRENT_USER, pluginSettings.getOauthServerBaseURL()), service);
+        OAuthRequest request = new OAuthRequest(Verb.GET, CURRENT_USER, service);
         request.addQuerystringParameter("access_token", accessToken);
         Response response = request.send();
 
         Logger.getLoggerFor(GooglePlusProvider.class).error(response.getBody());
         GooglePlusUser googleUser = fromJSON(response.getBody(), new TypeToken<GooglePlusUser>() {
         }.getType());
-        Logger.getLoggerFor(GooglePlusProvider.class).error(googleUser.toString());
 
         return googleUser.toUser();
     }

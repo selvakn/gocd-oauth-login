@@ -3,12 +3,13 @@ package org.gocd.plugin.provider.google;
 import lombok.Getter;
 import lombok.ToString;
 import org.gocd.plugin.GoCDUser;
+import org.gocd.plugin.provider.UserConvertable;
 
 import java.util.List;
 
 @Getter
 @ToString
-public class GooglePlusUser {
+public class GooglePlusUser implements UserConvertable {
     private List<Emails> emails;
     private String displayName;
 

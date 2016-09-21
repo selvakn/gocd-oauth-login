@@ -13,11 +13,10 @@ import org.gocd.plugin.util.ImageReader;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import static org.gocd.plugin.util.JSONUtils.fromJSON;
 
-public class GitLabProvider implements Provider {
+public class GitLabProvider extends Provider {
 
     private static final String IMAGE = ImageReader.readImage("logo_gitlab_64px.png");
     private static final String CURRENT_USER = "%s/api/v3/user";
@@ -51,10 +50,7 @@ public class GitLabProvider implements Provider {
 
         List<GitLabUser> usersResponse = fromJSON(response.getBody(), new TypeToken<List<GitLabUser>>() {
         }.getType());
-        return usersResponse
-                .stream()
-                .map(GitLabUser::toUser)
-                .collect(Collectors.toList());
+        return toUsers(usersResponse);
     }
 
     @Override

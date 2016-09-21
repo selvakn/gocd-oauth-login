@@ -2,6 +2,7 @@ package org.gocd.plugin;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
+import com.google.common.base.Function;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.GoApplicationAccessor;
 import com.thoughtworks.go.plugin.api.GoPlugin;
@@ -19,8 +20,8 @@ import org.gocd.plugin.util.FieldValidator;
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.*;
-import java.util.stream.Collectors;
 
+import static com.google.common.collect.Lists.transform;
 import static org.gocd.plugin.util.JSONUtils.*;
 
 @Extension
@@ -133,17 +134,29 @@ public class OAuthLoginPlugin implements GoPlugin {
     private GoPluginApiResponse handleValidatePluginSettingsConfiguration(GoPluginApiRequest goPluginApiRequest) {
         Map<String, Object> responseMap = fromJSON(goPluginApiRequest.requestBody(), new TypeToken<Map<String, Object>>() {
         }.getType());
-        Map<String, String> configuration = keyValuePairs(responseMap, "plugin-settings");
+        final Map<String, String> configuration = keyValuePairs(responseMap, "plugin-settings");
         List<Map<String, Object>> response = new ArrayList<>();
 
-        validate(response, fieldValidation ->
-                validateRequiredField(configuration, fieldValidation, "server_base_url", "Server Base URL"));
+        validate(response, new FieldValidator() {
+            @Override
+            public void validate(Map<String, Object> fieldValidation) {
+                validateRequiredField(configuration, fieldValidation, "server_base_url", "Server Base URL");
+            }
+        });
 
-        validate(response, fieldValidation ->
-                validateRequiredField(configuration, fieldValidation, "consumer_key", "OAuth Client ID"));
+        validate(response, new FieldValidator() {
+            @Override
+            public void validate(Map<String, Object> fieldValidation) {
+                validateRequiredField(configuration, fieldValidation, "consumer_key", "OAuth Client ID");
+            }
+        });
 
-        validate(response, fieldValidation ->
-                validateRequiredField(configuration, fieldValidation, "consumer_secret", "OAuth Client Secret"));
+        validate(response, new FieldValidator() {
+            @Override
+            public void validate(Map<String, Object> fieldValidation) {
+                validateRequiredField(configuration, fieldValidation, "consumer_secret", "OAuth Client Secret");
+            }
+        });
 
         return renderJSON(SUCCESS_RESPONSE_CODE, response);
     }
@@ -181,10 +194,13 @@ public class OAuthLoginPlugin implements GoPlugin {
         String searchTerm = requestBodyMap.get("search-term");
         PluginSettings pluginSettings = getPluginSettings();
         try {
-            List<Map> searchResults = provider
-                    .searchUser(getOauth20Service(), pluginSettings, searchTerm)
-                    .stream()
-                    .map(this::getUserMap).collect(Collectors.toList());
+            List<GoCDUser> users = provider.searchUser(getOauth20Service(), pluginSettings, searchTerm);
+            List<Map<String, String>> searchResults = transform(users, new Function<GoCDUser, Map<String, String>>() {
+                @Override
+                public Map<String, String> apply(GoCDUser goCDUser) {
+                    return getUserMap(goCDUser);
+                }
+            });
             return renderJSON(SUCCESS_RESPONSE_CODE, searchResults);
         } catch (IOException e) {
             return renderJSON(SUCCESS_RESPONSE_CODE, null);
