@@ -19,7 +19,7 @@ public class GitLabProvider extends Provider {
 
     private static final String IMAGE = ImageReader.readImage("logo_gitlab_64px.png");
     private static final String CURRENT_USER = "%s/api/v3/user";
-    private static final String SEARCH_USERS = "%s/api/v3/users?search=%s";
+    private static final String SEARCH_USERS = "%s/api/v3/users";
 
     @Override
     public String getPluginId() {
@@ -43,8 +43,9 @@ public class GitLabProvider extends Provider {
 
     @Override
     public List<GoCDUser> searchUser(OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
-        OAuthRequest request = new OAuthRequest(Verb.GET, String.format(SEARCH_USERS, pluginSettings.getOauthServerBaseURL(), searchTerm), service);
+        OAuthRequest request = new OAuthRequest(Verb.GET, String.format(SEARCH_USERS, pluginSettings.getOauthServerBaseURL()), service);
         request.addQuerystringParameter("private_token", pluginSettings.getPrivateToken());
+        request.addQuerystringParameter("search", searchTerm);
         Response response = request.send();
 
         List<GitLabUser> usersResponse = JSONUtils.fromJSON(response.getBody(), new TypeToken<List<GitLabUser>>() {

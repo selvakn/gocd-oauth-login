@@ -22,7 +22,7 @@ public class GitHubProvider extends Provider {
 
     private static final String IMAGE = ImageReader.readImage("logo_github_64px.png");
     private static final String CURRENT_USER = "https://api.github.com/user";
-    private static final String SEARCH_USERS = "https://api.github.com/search/users?q=%s";
+    private static final String SEARCH_USERS = "https://api.github.com/search/users";
 
     @Override
     public String getPluginId() {
@@ -46,9 +46,10 @@ public class GitHubProvider extends Provider {
 
     @Override
     public List<GoCDUser> searchUser(OAuth20Service service, PluginSettings pluginSettings, String searchTerm) throws IOException {
-        OAuthRequest request = new OAuthRequest(Verb.GET, String.format(SEARCH_USERS, searchTerm), service);
+        OAuthRequest request = new OAuthRequest(Verb.GET, SEARCH_USERS, service);
         request.addQuerystringParameter("client_id", pluginSettings.getConsumerKey());
         request.addQuerystringParameter("client_secret", pluginSettings.getConsumerSecret());
+        request.addQuerystringParameter("q", searchTerm);
         Response response = request.send();
 
         Logger.getLoggerFor(GitHubProvider.class).error("Search results: " + response);
