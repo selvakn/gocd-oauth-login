@@ -7,13 +7,12 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.reflect.TypeToken;
-import com.thoughtworks.go.plugin.api.logging.Logger;
 import com.tw.go.plugin.GoCDUser;
+import com.tw.go.plugin.PluginSettings;
+import com.tw.go.plugin.provider.Provider;
 import com.tw.go.plugin.util.ImageReader;
 import com.tw.go.plugin.util.JSONUtils;
 import lombok.Getter;
-import com.tw.go.plugin.PluginSettings;
-import com.tw.go.plugin.provider.Provider;
 
 import java.io.IOException;
 import java.util.List;
@@ -51,8 +50,6 @@ public class GitHubProvider extends Provider {
         request.addQuerystringParameter("client_secret", pluginSettings.getConsumerSecret());
         request.addQuerystringParameter("q", searchTerm);
         Response response = request.send();
-
-        Logger.getLoggerFor(GitHubProvider.class).error("Search results: " + response);
 
         UserSearchResults usersResponse = JSONUtils.fromJSON(response.getBody(), new TypeToken<UserSearchResults>() {
         }.getType());
