@@ -1,4 +1,4 @@
-package org.gocd.plugin.provider.gitlab;
+package com.tw.go.plugin.provider.gitlab;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.model.OAuthRequest;
@@ -6,15 +6,14 @@ import com.github.scribejava.core.model.Response;
 import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.reflect.TypeToken;
-import org.gocd.plugin.GoCDUser;
-import org.gocd.plugin.PluginSettings;
-import org.gocd.plugin.provider.Provider;
-import org.gocd.plugin.util.ImageReader;
+import com.tw.go.plugin.GoCDUser;
+import com.tw.go.plugin.util.ImageReader;
+import com.tw.go.plugin.util.JSONUtils;
+import com.tw.go.plugin.PluginSettings;
+import com.tw.go.plugin.provider.Provider;
 
 import java.io.IOException;
 import java.util.List;
-
-import static org.gocd.plugin.util.JSONUtils.fromJSON;
 
 public class GitLabProvider extends Provider {
 
@@ -48,7 +47,7 @@ public class GitLabProvider extends Provider {
         request.addQuerystringParameter("private_token", pluginSettings.getPrivateToken());
         Response response = request.send();
 
-        List<GitLabUser> usersResponse = fromJSON(response.getBody(), new TypeToken<List<GitLabUser>>() {
+        List<GitLabUser> usersResponse = JSONUtils.fromJSON(response.getBody(), new TypeToken<List<GitLabUser>>() {
         }.getType());
         return toUsers(usersResponse);
     }
@@ -64,7 +63,7 @@ public class GitLabProvider extends Provider {
         request.addQuerystringParameter("access_token", accessToken);
         Response response = request.send();
 
-        GitLabUser gitLabUser = fromJSON(response.getBody(), new TypeToken<GitLabUser>() {
+        GitLabUser gitLabUser = JSONUtils.fromJSON(response.getBody(), new TypeToken<GitLabUser>() {
         }.getType());
 
         return gitLabUser.toUser();

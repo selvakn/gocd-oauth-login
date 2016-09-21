@@ -1,4 +1,4 @@
-package org.gocd.plugin;
+package com.tw.go.plugin;
 
 import com.github.scribejava.core.builder.ServiceBuilder;
 import com.github.scribejava.core.oauth.OAuth20Service;
@@ -13,16 +13,16 @@ import com.thoughtworks.go.plugin.api.request.GoApiRequest;
 import com.thoughtworks.go.plugin.api.request.GoPluginApiRequest;
 import com.thoughtworks.go.plugin.api.response.GoApiResponse;
 import com.thoughtworks.go.plugin.api.response.GoPluginApiResponse;
+import com.tw.go.plugin.util.FieldValidator;
+import com.tw.go.plugin.util.JSONUtils;
 import org.apache.commons.io.IOUtils;
-import org.gocd.plugin.provider.Provider;
-import org.gocd.plugin.util.FieldValidator;
+import com.tw.go.plugin.provider.Provider;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.*;
 
 import static com.google.common.collect.Lists.transform;
-import static org.gocd.plugin.util.JSONUtils.*;
 
 @Extension
 public class OAuthLoginPlugin implements GoPlugin {
@@ -132,7 +132,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private GoPluginApiResponse handleValidatePluginSettingsConfiguration(GoPluginApiRequest goPluginApiRequest) {
-        Map<String, Object> responseMap = fromJSON(goPluginApiRequest.requestBody(), new TypeToken<Map<String, Object>>() {
+        Map<String, Object> responseMap = JSONUtils.fromJSON(goPluginApiRequest.requestBody(), new TypeToken<Map<String, Object>>() {
         }.getType());
         final Map<String, String> configuration = keyValuePairs(responseMap, "plugin-settings");
         List<Map<String, Object>> response = new ArrayList<>();
@@ -190,7 +190,7 @@ public class OAuthLoginPlugin implements GoPlugin {
             return renderJSON(SUCCESS_RESPONSE_CODE, null);
         }
 
-        Map<String, String> requestBodyMap = asMapOfStrings(goPluginApiRequest.requestBody());
+        Map<String, String> requestBodyMap = JSONUtils.asMapOfStrings(goPluginApiRequest.requestBody());
         String searchTerm = requestBodyMap.get("search-term");
         PluginSettings pluginSettings = getPluginSettings();
         try {
@@ -220,12 +220,12 @@ public class OAuthLoginPlugin implements GoPlugin {
         GoApiResponse response = goApplicationAccessor.submit(
                 createGoApiRequest(
                         GET_PLUGIN_SETTINGS,
-                        toJSON(map("plugin-id", provider.getPluginId()))
+                        JSONUtils.toJSON(map("plugin-id", provider.getPluginId()))
                 ));
         if (response.responseBody() == null || response.responseBody().trim().isEmpty()) {
             throw new RuntimeException("plugin is not configured. please provide plugin settings.");
         }
-        Map<String, String> responseBodyMap = asMapOfStrings(response.responseBody());
+        Map<String, String> responseBodyMap = JSONUtils.asMapOfStrings(response.responseBody());
         return new PluginSettings(responseBodyMap.get(PLUGIN_SETTINGS_SERVER_BASE_URL), responseBodyMap.get(PLUGIN_SETTINGS_CONSUMER_KEY),
                 responseBodyMap.get(PLUGIN_SETTINGS_CONSUMER_SECRET),
                 responseBodyMap.get(PLUGIN_SETTINGS_PRIVATE_TOKEN),
@@ -281,7 +281,7 @@ public class OAuthLoginPlugin implements GoPlugin {
 
     private void saveInSession(String key, String value) {
         GoApiRequest goApiRequest = createGoApiRequest(
-                GO_REQUEST_SESSION_PUT, toJSON(map(
+                GO_REQUEST_SESSION_PUT, JSONUtils.toJSON(map(
                         "plugin-id", provider.getPluginId(), "session-data", map(key, value))
                 ));
         goApplicationAccessor.submit(goApiRequest);
@@ -289,9 +289,9 @@ public class OAuthLoginPlugin implements GoPlugin {
 
     private String getFromSession(String key) {
         GoApiRequest goApiRequest = createGoApiRequest(
-                GO_REQUEST_SESSION_GET, toJSON(map("plugin-id", provider.getPluginId()))
+                GO_REQUEST_SESSION_GET, JSONUtils.toJSON(map("plugin-id", provider.getPluginId()))
         );
-        return asMapOfStrings(
+        return JSONUtils.asMapOfStrings(
                 goApplicationAccessor.submit(goApiRequest).responseBody()
         ).get(key);
     }
@@ -299,7 +299,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     private void setUserSessionAs(GoCDUser user) {
         GoApiRequest authenticateUserRequest = createGoApiRequest(
                 GO_REQUEST_AUTHENTICATE_USER,
-                toJSON(map("user", getUserMap(user)))
+                JSONUtils.toJSON(map("user", getUserMap(user)))
         );
         goApplicationAccessor.submit(authenticateUserRequest);
     }
@@ -370,7 +370,7 @@ public class OAuthLoginPlugin implements GoPlugin {
     }
 
     private GoPluginApiResponse renderJSON(final int responseCode, final Map<String, String> responseHeaders, Object response) {
-        final String json = response == null ? null : toJSON(response);
+        final String json = response == null ? null : JSONUtils.toJSON(response);
         return new GoPluginApiResponse() {
             @Override
             public int responseCode() {

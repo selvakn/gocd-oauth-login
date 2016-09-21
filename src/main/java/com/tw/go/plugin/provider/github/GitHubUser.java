@@ -1,10 +1,10 @@
-package org.gocd.plugin.provider.github;
+package com.tw.go.plugin.provider.github;
 
+import com.tw.go.plugin.GoCDUser;
+import com.tw.go.plugin.provider.UserConvertable;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.gocd.plugin.GoCDUser;
-import org.gocd.plugin.provider.UserConvertable;
 
 @Getter
 @AllArgsConstructor

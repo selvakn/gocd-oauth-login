@@ -2,7 +2,7 @@
 <go-plugin id="gitlab.oauth.login" version="1">
     <about>
         <name>GitLab OAuth Login</name>
-        <version>0.1</version>
+        <version>1.3</version>
         <target-go-version>16.8.0</target-go-version>
         <description>Allows users to login with GitLab (CE)</description>
         <vendor>

@@ -1,4 +1,4 @@
-package org.gocd.plugin.util;
+package com.tw.go.plugin.util;
 
 import java.util.Map;
 

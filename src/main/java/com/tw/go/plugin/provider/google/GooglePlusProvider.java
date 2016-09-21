@@ -1,4 +1,4 @@
-package org.gocd.plugin.provider.google;
+package com.tw.go.plugin.provider.google;
 
 import com.github.scribejava.apis.GoogleApi20;
 import com.github.scribejava.core.builder.api.DefaultApi20;
@@ -8,14 +8,13 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.logging.Logger;
-import org.gocd.plugin.GoCDUser;
-import org.gocd.plugin.PluginSettings;
-import org.gocd.plugin.provider.Provider;
-import org.gocd.plugin.util.ImageReader;
+import com.tw.go.plugin.GoCDUser;
+import com.tw.go.plugin.PluginSettings;
+import com.tw.go.plugin.provider.Provider;
+import com.tw.go.plugin.util.ImageReader;
+import com.tw.go.plugin.util.JSONUtils;
 
 import java.io.IOException;
-
-import static org.gocd.plugin.util.JSONUtils.fromJSON;
 
 public class GooglePlusProvider extends Provider {
 
@@ -59,7 +58,7 @@ public class GooglePlusProvider extends Provider {
         Response response = request.send();
 
         Logger.getLoggerFor(GooglePlusProvider.class).error(response.getBody());
-        GooglePlusUser googleUser = fromJSON(response.getBody(), new TypeToken<GooglePlusUser>() {
+        GooglePlusUser googleUser = JSONUtils.fromJSON(response.getBody(), new TypeToken<GooglePlusUser>() {
         }.getType());
 
         return googleUser.toUser();

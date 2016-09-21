@@ -1,10 +1,10 @@
-package org.gocd.plugin.provider;
+package com.tw.go.plugin.provider;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.common.base.Function;
-import org.gocd.plugin.GoCDUser;
-import org.gocd.plugin.PluginSettings;
+import com.tw.go.plugin.GoCDUser;
+import com.tw.go.plugin.PluginSettings;
 
 import java.io.IOException;
 import java.util.ArrayList;

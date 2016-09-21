@@ -1,4 +1,4 @@
-package org.gocd.plugin;
+package com.tw.go.plugin;
 
 
 import lombok.AllArgsConstructor;

@@ -1,4 +1,4 @@
-package org.gocd.plugin.provider.github;
+package com.tw.go.plugin.provider.github;
 
 import com.github.scribejava.apis.GitHubApi;
 import com.github.scribejava.core.builder.api.DefaultApi20;
@@ -8,16 +8,15 @@ import com.github.scribejava.core.model.Verb;
 import com.github.scribejava.core.oauth.OAuth20Service;
 import com.google.gson.reflect.TypeToken;
 import com.thoughtworks.go.plugin.api.logging.Logger;
+import com.tw.go.plugin.GoCDUser;
+import com.tw.go.plugin.util.ImageReader;
+import com.tw.go.plugin.util.JSONUtils;
 import lombok.Getter;
-import org.gocd.plugin.GoCDUser;
-import org.gocd.plugin.PluginSettings;
-import org.gocd.plugin.provider.Provider;
-import org.gocd.plugin.util.ImageReader;
+import com.tw.go.plugin.PluginSettings;
+import com.tw.go.plugin.provider.Provider;
 
 import java.io.IOException;
 import java.util.List;
-
-import static org.gocd.plugin.util.JSONUtils.fromJSON;
 
 public class GitHubProvider extends Provider {
 
@@ -54,7 +53,7 @@ public class GitHubProvider extends Provider {
 
         Logger.getLoggerFor(GitHubProvider.class).error("Search results: " + response);
 
-        UserSearchResults usersResponse = fromJSON(response.getBody(), new TypeToken<UserSearchResults>() {
+        UserSearchResults usersResponse = JSONUtils.fromJSON(response.getBody(), new TypeToken<UserSearchResults>() {
         }.getType());
         return toUsers(usersResponse.getItems());
     }
@@ -70,7 +69,7 @@ public class GitHubProvider extends Provider {
         request.addQuerystringParameter("access_token", accessToken);
         Response response = request.send();
 
-        GitHubUser githubUser = fromJSON(response.getBody(), new TypeToken<GitHubUser>() {
+        GitHubUser githubUser = JSONUtils.fromJSON(response.getBody(), new TypeToken<GitHubUser>() {
         }.getType());
 
         return githubUser.toUser();

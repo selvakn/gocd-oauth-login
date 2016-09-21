@@ -1,9 +1,9 @@
-package org.gocd.plugin.provider.google;
+package com.tw.go.plugin.provider.google;
 
+import com.tw.go.plugin.GoCDUser;
+import com.tw.go.plugin.provider.UserConvertable;
 import lombok.Getter;
 import lombok.ToString;
-import org.gocd.plugin.GoCDUser;
-import org.gocd.plugin.provider.UserConvertable;
 
 import java.util.List;
 

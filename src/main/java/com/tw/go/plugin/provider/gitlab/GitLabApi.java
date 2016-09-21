@@ -1,4 +1,4 @@
-package org.gocd.plugin.provider.gitlab;
+package com.tw.go.plugin.provider.gitlab;
 
 import com.github.scribejava.core.builder.api.DefaultApi20;
 import com.github.scribejava.core.extractors.OAuth2AccessTokenJsonExtractor;
